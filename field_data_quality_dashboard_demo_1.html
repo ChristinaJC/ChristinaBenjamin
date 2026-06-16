@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Data Quality &amp; Performance Dashboard — Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#F3F5F9;
+    --card:#FFFFFF;
+    --navy:#16335E;
+    --navy-2:#1B3A6B;
+    --ink:#1F2733;
+    --muted:#5B6B7D;
+    --hairline:#E1E6ED;
+    --red:#C0392B;
+    --red-soft:#F6DDDA;
+    --teal:#1E7D6B;
+    --teal-soft:#DCEFE9;
+    --amber:#B8742B;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,Segoe UI,sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 24px 60px;}
+
+  header.top{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);
+    border-radius:14px;
+    padding:22px 26px;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  header.top h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:1.5rem;
+    font-weight:600;
+    margin:0 0 4px 0;
+    letter-spacing:-0.01em;
+  }
+  header.top p{margin:0;font-size:0.85rem;color:#C9D6EA;max-width:560px;line-height:1.4;}
+  .demo-tag{
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.35);
+    border-radius:999px;
+    padding:6px 14px;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+
+  .filters{
+    margin-top:18px;
+    background:var(--card);
+    border:1px solid var(--hairline);
+    border-radius:12px;
+    padding:14px 18px;
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    align-items:flex-end;
+  }
+  .filter-group{display:flex;flex-direction:column;gap:6px;min-width:140px;}
+  .filter-group label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);font-weight:600;}
+  .yeartoggle{display:flex;border:1px solid var(--hairline);border-radius:8px;overflow:hidden;}
+  .yeartoggle button{
+    border:none;background:var(--card);color:var(--ink);padding:8px 16px;font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer;
+  }
+  .yeartoggle button[aria-pressed="true"]{background:var(--navy-2);color:#fff;}
+  .yeartoggle button:focus-visible, select:focus-visible, .yeartoggle button:focus{outline:2px solid var(--teal);outline-offset:2px;}
+  select{
+    border:1px solid var(--hairline);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:0.85rem;background:var(--card);color:var(--muted);
+  }
+
+  .stats{
+    margin-top:18px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+  }
+  .stat{
+    background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:16px 18px;
+  }
+  .stat .num{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;font-variant-numeric:tabular-nums;}
+  .stat .lbl{font-size:0.78rem;color:var(--muted);margin-top:2px;}
+
+  .main{
+    margin-top:18px;
+    display:grid;
+    grid-template-columns:1.15fr 1fr;
+    gap:16px;
+  }
+  .panel{background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:18px 20px;}
+  .panel h2{font-family:'Space Grotesk',sans-serif;font-size:0.95rem;margin:0 0 14px 0;font-weight:600;}
+
+  .kpi-row{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 0;
+    border-bottom:1px solid var(--hairline);
+  }
+  .kpi-row:last-child{border-bottom:none;}
+  .kpi-bar-track{width:46px;height:6px;border-radius:99px;background:var(--hairline);overflow:hidden;flex:none;}
+  .kpi-bar-fill{height:100%;border-radius:99px;background:var(--red);transition:width .5s ease;}
+  .kpi-text{flex:1;min-width:0;}
+  .kpi-text .lbl{font-size:0.85rem;font-weight:600;color:var(--ink);}
+  .kpi-text .sub{font-size:0.74rem;color:var(--muted);margin-top:1px;}
+  .kpi-num{text-align:right;flex:none;}
+  .kpi-num .count{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;font-variant-numeric:tabular-nums;}
+  .kpi-num .pct{font-size:0.72rem;color:var(--red);font-weight:600;}
+
+  .chartwrap{display:flex;flex-direction:column;height:100%;}
+  svg.linechart{width:100%;height:220px;}
+  .chart-foot{display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted);margin-top:4px;}
+
+  footer.note{
+    margin-top:22px;font-size:0.74rem;color:var(--muted);line-height:1.5;
+    border-top:1px dashed var(--hairline);padding-top:14px;
+  }
+
+  @media (max-width:840px){
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .main{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .kpi-bar-fill{transition:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>Field Data Quality &amp; Performance Dashboard</h1>
+      <p>Recreated demo of a KPI-based scoring model for field data collector performance. All figures below are synthetic.</p>
+    </div>
+    <div class="demo-tag">Demo · synthetic data</div>
+  </header>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label>Year</label>
+      <div class="yeartoggle" id="yeartoggle">
+        <button data-year="2023" aria-pressed="true">2023</button>
+        <button data-year="2024" aria-pressed="false">2024</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <label>Data collector</label>
+      <select disabled><option>All collectors</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Respondent ID</label>
+      <select disabled><option>All</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Response ID</label>
+      <select disabled><option>All</option></select>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="main">
+    <div class="panel">
+      <h2>Data quality KPIs</h2>
+      <div id="kpiList"></div>
+    </div>
+    <div class="panel chartwrap">
+      <h2>Responses over time</h2>
+      <svg class="linechart" id="lineChart" viewBox="0 0 480 220" preserveAspectRatio="none"></svg>
+      <div class="chart-foot" id="chartMonths"></div>
+    </div>
+  </div>
+
+  <footer class="note">
+    Recreated mockup of a real Power BI prototype built for an agricultural field-data-collection performance program. Organization, program, and respondent details have been generalized; all values shown are illustrative and do not represent real survey data.
+  </footer>
+
+</div>
+
+<script>
+const DATA = {
+  2023: {
+    total: 6540, respondentIds: 6102, householdIds: 4210, avgPerDay: 0.92,
+    kpis: [
+      {label:"Location mismatch", sub:"Survey GPS recorded >10km from registered farm location", count:512, pct:7.8},
+      {label:"Duplicate responses", sub:"Same respondent & household ID surveyed more than once", count:48, pct:0.73},
+      {label:"Interviewee identity mismatch", sub:"Recorded respondent name differs from person interviewed", count:35, pct:0.54},
+      {label:"Relationship-field inconsistency", sub:"Alternate respondent answered, relationship field incomplete", count:22, pct:0.34},
+      {label:"Refusal-logic conflict", sub:"Interview marked accepted, but refusal reason also filled in", count:7, pct:0.11},
+      {label:"Name-collision flag", sub:"Data collector name matches respondent name", count:9, pct:0.14}
+    ],
+    trend: [380,410,520,470,560,610,540,640,590,560,530,505]
+  },
+  2024: {
+    total: 8460, respondentIds: 7850, householdIds: 5510, avgPerDay: 1.15,
+    kpis: [
+      {label:"Location mismatch", sub:"Survey GPS recorded >10km from registered farm location", count:605, pct:7.15},
+      {label:"Duplicate responses", sub:"Same respondent & household ID surveyed more than once", count:55, pct:0.65},
+      {label:"Interviewee identity mismatch", sub:"Recorded respondent name differs from person interviewed", count:38, pct:0.45},
+      {label:"Relationship-field inconsistency", sub:"Alternate respondent answered, relationship field incomplete", count:29, pct:0.34},
+      {label:"Refusal-logic conflict", sub:"Interview marked accepted, but refusal reason also filled in", count:10, pct:0.12},
+      {label:"Name-collision flag", sub:"Data collector name matches respondent name", count:12, pct:0.14}
+    ],
+    trend: [520,610,690,760,820,900,860,780,720,700,680,650]
+  }
+};
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function fmt(n){ return n.toLocaleString('en-US'); }
+
+function render(year){
+  const d = DATA[year];
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="num">${fmt(d.total)}</div><div class="lbl"># Total responses</div></div>
+    <div class="stat"><div class="num">${fmt(d.respondentIds)}</div><div class="lbl"># Respondent IDs</div></div>
+    <div class="stat"><div class="num">${fmt(d.householdIds)}</div><div class="lbl"># Household member IDs</div></div>
+    <div class="stat"><div class="num">${d.avgPerDay.toFixed(2)}</div><div class="lbl">Avg surveys / day</div></div>
+  `;
+
+  const maxPct = Math.max(...d.kpis.map(k=>k.pct));
+  document.getElementById('kpiList').innerHTML = d.kpis.map(k => `
+    <div class="kpi-row">
+      <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:${(k.pct/maxPct*100).toFixed(0)}%"></div></div>
+      <div class="kpi-text"><div class="lbl">${k.label}</div><div class="sub">${k.sub}</div></div>
+      <div class="kpi-num"><div class="count">${fmt(k.count)}</div><div class="pct">${k.pct}%</div></div>
+    </div>
+  `).join('');
+
+  drawChart(d.trend);
+  document.getElementById('chartMonths').innerHTML = MONTHS.map(m=>`<span>${m}</span>`).join('');
+}
+
+function drawChart(values){
+  const svg = document.getElementById('lineChart');
+  const W = 480, H = 220, pad = 18;
+  const max = Math.max(...values) * 1.15;
+  const min = 0;
+  const stepX = (W - pad*2) / (values.length - 1);
+  const yFor = v => H - pad - ((v - min) / (max - min)) * (H - pad*2);
+  const points = values.map((v,i) => [pad + i*stepX, yFor(v)]);
+
+  const linePath = points.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const areaPath = linePath + ` L${points[points.length-1][0].toFixed(1)},${H-pad} L${points[0][0].toFixed(1)},${H-pad} Z`;
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1B3A6B" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#1B3A6B" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <line x1="${pad}" y1="${H-pad}" x2="${W-pad}" y2="${H-pad}" stroke="#E1E6ED" stroke-width="1"/>
+    <path d="${areaPath}" fill="url(#grad)"/>
+    <path d="${linePath}" fill="none" stroke="#1B3A6B" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+    ${points.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#1B3A6B"/>`).join('')}
+  `;
+}
+
+document.getElementById('yeartoggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  document.querySelectorAll('#yeartoggle button').forEach(b => b.setAttribute('aria-pressed', b===btn ? 'true' : 'false'));
+  render(btn.dataset.year);
+});
+
+render('2023');
+</script>
+</body>
+</html>

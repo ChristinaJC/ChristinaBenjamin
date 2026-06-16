@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ocean Freight Scope 3 Emissions Estimator — Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#EFF3F0;
+    --card:#FFFFFF;
+    --ink:#16241F;
+    --muted:#566860;
+    --forest:#163B36;
+    --forest2:#1F5048;
+    --steel:#355C7D;
+    --amber:#C97A3D;
+    --hairline:#DCE3DE;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,Segoe UI,sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 24px 60px;}
+
+  header.top{
+    background:linear-gradient(135deg,var(--forest) 0%, var(--forest2) 100%);
+    border-radius:14px;padding:24px 28px;color:#EFF6F3;
+    display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:flex-start;
+  }
+  header.top h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:1.6rem;margin:0 0 8px 0;letter-spacing:-0.01em;
+  }
+  header.top p{margin:0;font-size:0.86rem;color:#CFE2DA;max-width:600px;line-height:1.5;}
+  .demo-tag{
+    background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.35);border-radius:999px;
+    padding:6px 14px;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;
+  }
+
+  .grid{margin-top:18px;display:grid;grid-template-columns:1fr 1.2fr;gap:16px;}
+  .panel{background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:20px 22px;}
+  .panel h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;margin:0 0 4px 0;}
+  .panel .panel-sub{font-size:0.78rem;color:var(--muted);margin:0 0 16px 0;line-height:1.4;}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:0.74rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);font-weight:600;margin-bottom:6px;}
+  .field input[type=number]{
+    width:100%;padding:9px 11px;border:1px solid var(--hairline);border-radius:8px;font-family:inherit;font-size:0.95rem;color:var(--ink);background:#FAFCFB;
+  }
+  .field input[type=range]{width:100%;accent-color:var(--forest2);}
+  .field .hint{font-size:0.7rem;color:var(--muted);margin-top:4px;}
+  .field input:focus-visible{outline:2px solid var(--steel);outline-offset:1px;}
+  .fixed-note{
+    background:#F1F6F3;border:1px dashed var(--hairline);border-radius:8px;padding:10px 12px;font-size:0.74rem;color:var(--muted);line-height:1.45;
+  }
+  .warn{color:#A23A2B;font-size:0.74rem;margin-top:6px;display:none;}
+
+  .ship-wrap{margin-top:18px;}
+  .ship-wrap .util-label{font-size:0.82rem;font-weight:600;margin-bottom:8px;}
+  svg.ship{width:100%;height:90px;}
+
+  .bars{display:flex;flex-direction:column;gap:14px;margin-top:6px;}
+  .bar-row{display:grid;grid-template-columns:160px 1fr 86px;gap:10px;align-items:center;}
+  .bar-row .m-label{font-size:0.8rem;font-weight:600;}
+  .bar-row .m-formula{font-size:0.68rem;color:var(--muted);display:block;font-weight:400;}
+  .bar-track{height:22px;background:#EEF2EF;border-radius:6px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:6px;transition:width .4s ease;}
+  .bar-row .m-value{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:0.88rem;}
+
+  .explain{margin-top:18px;}
+  .explain p{font-size:0.86rem;line-height:1.6;color:var(--ink);margin:0 0 10px 0;}
+  .explain p:last-child{margin-bottom:0;}
+  .explain b{color:var(--forest2);}
+
+  footer.note{
+    margin-top:20px;font-size:0.74rem;color:var(--muted);line-height:1.55;border-top:1px dashed var(--hairline);padding-top:14px;
+  }
+
+  @media (max-width:880px){ .grid{grid-template-columns:1fr;} .bar-row{grid-template-columns:120px 1fr 70px;} }
+  @media (prefers-reduced-motion: reduce){ .bar-fill{transition:none;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>Ocean Freight Scope 3 Emissions Estimator</h1>
+      <p>Comparing four published methodologies for estimating Scope 3 emissions from a single ocean voyage, for a bulk liquid commodity shipped via chemical/product tanker — used when primary fuel-consumption data isn't available from the charterer.</p>
+    </div>
+    <div class="demo-tag">Demo</div>
+  </header>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Voyage inputs</h2>
+      <p class="panel-sub">Adjust the values below to see how the four methods diverge.</p>
+
+      <div class="field">
+        <label for="distance">Distance (nautical miles)</label>
+        <input type="number" id="distance" min="1" value="2500">
+      </div>
+
+      <div class="field">
+        <label for="dwt">Vessel deadweight tonnage — DWT (t)</label>
+        <input type="range" id="dwt" min="10000" max="19999" value="16000">
+        <div class="hint"><span id="dwtVal">16,000</span> t</div>
+      </div>
+
+      <div class="field">
+        <label for="cargo">Cargo carried (t)</label>
+        <input type="range" id="cargo" min="100" value="3000">
+        <div class="hint"><span id="cargoVal">3,000</span> t</div>
+        <div class="warn" id="cargoWarn">Cargo carried can't exceed vessel DWT — capped automatically.</div>
+      </div>
+
+      <div class="fixed-note">
+        Vessel category fixed to <b>chemical/product tanker, 10,000–19,999 DWT</b> — the only bucket this demo has sourced emission-intensity factors for. See footnote for source.
+      </div>
+
+      <div class="ship-wrap">
+        <div class="util-label">Capacity used by this cargo: <span id="utilPct">19%</span></div>
+        <svg class="ship" viewBox="0 0 400 90" id="shipSvg"></svg>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Estimated emissions by method</h2>
+      <p class="panel-sub">Tonnes CO₂ / CO₂e for this single voyage, under each methodology.</p>
+
+      <div class="bars" id="bars"></div>
+
+      <div class="explain">
+        <p><b>Methods 1 (IMO–AER)</b> allocates emissions based on the ship's full carrying capacity, regardless of how much of it your cargo actually used. <b>Methods 2–4</b> allocate only the share of emissions corresponding to the cargo actually carried.</p>
+        <p>When a shipment uses a small share of a tanker's total capacity, capacity-based allocation (AER) can substantially overestimate the emissions attributable to that cargo — the ship visual above shows why. Cargo-based methods (EEOI, GLEC TTW, GLEC WTW) are generally a closer match to actual attributable emissions, though they assume the rest of the ship's capacity was used by other cargo.</p>
+        <p><b>TTW</b> (tank-to-wake) covers only fuel combustion onboard. <b>WTW</b> (well-to-wake) adds the emissions from producing and transporting that fuel to the ship — which is why WTW is typically the more comprehensive, and often recommended, figure.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="note">
+    Emission-intensity factors (AER, EEOI, GLEC TTW, GLEC WTW) for chemical/product tankers in the 10,000–19,999 DWT range are illustrative reference values drawn from the published <b>IMO Fourth IMO GHG Study (2020)</b> and the <b>GLEC Framework v3.1</b> — both publicly available methodologies, not specific to any organization. I haven't re-verified these against the current published tables myself; if you're using this for actual reporting, check the latest editions before relying on the figures. All voyage inputs above are illustrative and don't represent a real shipment.
+  </footer>
+
+</div>
+
+<script>
+const FACTORS = { aer: 17, eeoi: 24.9, ttw: 15.4, wtw: 18.7 }; // AER/EEOI in g/DWT.nm & g/t.nm ; TTW/WTW in g/t.km
+const METHODS = [
+  {key:'aer', label:'IMO — AER', formula:'AER × distance × DWT', color:'#C97A3D'},
+  {key:'eeoi', label:'IMO — EEOI', formula:'EEOI × distance × cargo', color:'#355C7D'},
+  {key:'ttw', label:'GLEC — TTW', formula:'TTW × distance(km) × cargo', color:'#1F5048'},
+  {key:'wtw', label:'GLEC — WTW', formula:'WTW × distance(km) × cargo', color:'#163B36'}
+];
+
+const distanceEl = document.getElementById('distance');
+const dwtEl = document.getElementById('dwt');
+const cargoEl = document.getElementById('cargo');
+const dwtVal = document.getElementById('dwtVal');
+const cargoVal = document.getElementById('cargoVal');
+const cargoWarn = document.getElementById('cargoWarn');
+const utilPct = document.getElementById('utilPct');
+const barsEl = document.getElementById('bars');
+const shipSvg = document.getElementById('shipSvg');
+
+function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+
+function computeAndRender(){
+  let distance = Math.max(1, parseFloat(distanceEl.value) || 0);
+  let dwt = parseFloat(dwtEl.value);
+  let cargo = parseFloat(cargoEl.value);
+
+  cargoEl.max = dwt;
+  if(cargo > dwt){ cargo = dwt; cargoEl.value = dwt; cargoWarn.style.display='block'; }
+  else { cargoWarn.style.display='none'; }
+
+  dwtVal.textContent = fmt(dwt);
+  cargoVal.textContent = fmt(cargo);
+
+  const distanceKm = distance * 1.852;
+
+  const results = {
+    aer:  FACTORS.aer  * distance   * dwt   / 1e6,
+    eeoi: FACTORS.eeoi * distance   * cargo / 1e6,
+    ttw:  FACTORS.ttw  * distanceKm * cargo / 1e6,
+    wtw:  FACTORS.wtw  * distanceKm * cargo / 1e6
+  };
+  const max = Math.max(...Object.values(results));
+
+  barsEl.innerHTML = METHODS.map(m => `
+    <div class="bar-row">
+      <div class="m-label">${m.label}<span class="m-formula">${m.formula}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(results[m.key]/max*100).toFixed(1)}%;background:${m.color};"></div></div>
+      <div class="m-value">${fmt(results[m.key])} t</div>
+    </div>
+  `).join('');
+
+  const util = (cargo / dwt) * 100;
+  utilPct.textContent = util.toFixed(0) + '%';
+  drawShip(util);
+}
+
+function drawShip(utilPct){
+  const hullX=20, hullY=18, hullW=360, hullH=46;
+  const innerPad=5;
+  const innerW = hullW - innerPad*2;
+  const fillW = innerW * (utilPct/100);
+  shipSvg.innerHTML = `
+    <rect x="${hullX}" y="${hullY}" width="${hullW}" height="${hullH}" rx="16" fill="#FAFCFB" stroke="#16241F" stroke-width="2"/>
+    <rect x="${hullX+innerPad}" y="${hullY+innerPad}" width="${Math.max(fillW,0)}" height="${hullH-innerPad*2}" rx="9" fill="#C97A3D" opacity="0.88"/>
+    <text x="${hullX}" y="${hullY+hullH+18}" font-size="11" fill="#566860" font-family="IBM Plex Sans, sans-serif">Cargo hold — your shipment</text>
+    <text x="${hullX+hullW-92}" y="${hullY+hullH+18}" font-size="11" fill="#566860" font-family="IBM Plex Sans, sans-serif">Unused capacity</text>
+  `;
+}
+
+[distanceEl,dwtEl,cargoEl].forEach(el => el.addEventListener('input', computeAndRender));
+computeAndRender();
+</script>
+</body>
+</html>
