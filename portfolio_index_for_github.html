@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Critical Minerals Intelligence · Christina B</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --navy:#0D1F35;
+  --prussian:#1B3A5C;
+  --cobalt:#1B4F8A;
+  --sky:#5B9EC9;
+  --ivory:#F5F0E8;
+  --warm:#EDE4D0;
+  --paper:#F8F4EC;
+  --wheat:#D4943A;
+  --wheat-soft:#E8B96A;
+  --straw:#F5D48A;
+  --conflict:#B85450;
+  --conflict-soft:#D4827E;
+  --teal:#1A6B58;
+  --sage:#3D8B72;
+  --sage-soft:#7CBFAB;
+  --storm:#6B4B7A;
+  --text-primary:#1A1614;
+  --text-secondary:#5A5450;
+  --text-tertiary:#8A8480;
+  --border:#DDD8CE;
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--text-primary);-webkit-font-smoothing:antialiased}
+
+/* ── HERO ── */
+.hero{
+  position:relative;
+  background:var(--navy);
+  padding:56px 48px 48px;
+  overflow:hidden;
+}
+
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(91,158,201,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91,158,201,.06) 1px, transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;
+}
+
+.hero-grid::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 70% 40%, rgba(27,79,138,.4) 0%, transparent 70%);
+}
+
+.hero-inner{position:relative;z-index:1;max-width:900px}
+
+.hero-eyebrow{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:20px;
+}
+.eyebrow-line{width:28px;height:1px;background:var(--wheat)}
+.eyebrow-text{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:400;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--wheat-soft);
+}
+
+.hero-title{
+  font-size:clamp(26px,4vw,42px);
+  font-weight:300;
+  color:var(--ivory);
+  line-height:1.15;
+  letter-spacing:-.02em;
+  margin-bottom:16px;
+  max-width:640px;
+}
+.hero-title em{
+  font-style:normal;
+  color:var(--wheat-soft);
+  font-weight:400;
+}
+
+.hero-desc{
+  font-size:14px;font-weight:300;
+  color:rgba(245,240,232,.5);
+  line-height:1.75;
+  max-width:520px;
+  margin-bottom:28px;
+}
+
+.hero-meta{
+  display:flex;align-items:center;gap:24px;
+  padding-top:20px;
+  border-top:0.5px solid rgba(255,255,255,.08);
+  flex-wrap:wrap;
+}
+.meta-item{font-size:11px;color:rgba(245,240,232,.35);letter-spacing:.04em}
+.meta-item strong{
+  display:block;
+  font-size:12px;font-weight:500;
+  color:rgba(245,240,232,.75);
+  letter-spacing:.01em;
+  margin-bottom:1px;
+}
+
+.hero-accent{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, var(--wheat) 0%, transparent 60%);
+}
+
+/* ── TRIPTYCH ── */
+.triptych{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  min-height:420px;
+}
+
+/* PANEL 1 — dark supply risk */
+.p1{
+  background:var(--prussian);
+  padding:28px 28px 32px;
+  border-right:0.5px solid rgba(255,255,255,.06);
+}
+.p2{
+  background:var(--paper);
+  padding:28px 28px 32px;
+  border-right:0.5px solid var(--border);
+}
+.p3{
+  background:var(--teal);
+  padding:28px 28px 32px;
+}
+
+.panel-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;font-weight:400;
+  text-transform:uppercase;letter-spacing:.12em;
+  margin-bottom:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.p1 .panel-label{color:rgba(245,240,232,.35)}
+.p2 .panel-label{color:var(--text-tertiary)}
+.p3 .panel-label{color:rgba(245,240,232,.4)}
+.panel-label-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.p1 .panel-label-dot{background:var(--sky)}
+.p2 .panel-label-dot{background:var(--wheat)}
+.p3 .panel-label-dot{background:rgba(245,240,232,.5)}
+
+/* RISK BARS */
+.risk-list{display:flex;flex-direction:column;gap:2px}
+.risk-item{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:8px 0;
+  border-bottom:0.5px solid rgba(255,255,255,.05);
+}
+.risk-item:last-child{border-bottom:none}
+.risk-name{font-size:12px;font-weight:400;color:rgba(245,240,232,.8)}
+.risk-sub{font-size:10px;color:rgba(245,240,232,.3);margin-top:1px}
+.risk-right{display:flex;align-items:center;gap:8px}
+.risk-bar-track{width:56px;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.risk-bar-fill{height:100%;border-radius:2px}
+.risk-score{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:rgba(245,240,232,.35);
+  width:24px;text-align:right;
+}
+.risk-flags{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap}
+.rflag{font-size:9px;font-weight:500;padding:1px 5px;border-radius:2px;letter-spacing:.03em}
+.rf-c{background:rgba(184,84,80,.25);color:var(--conflict-soft)}
+.rf-g{background:rgba(107,75,122,.25);color:#C4A0D4}
+.rf-s{background:rgba(212,148,58,.2);color:var(--straw)}
+.rf-w{background:rgba(91,158,201,.15);color:var(--sky)}
+
+/* GREEN ECONOMY */
+.green-list{display:flex;flex-direction:column;gap:12px}
+.green-item{}
+.green-tech{
+  font-size:12px;font-weight:500;
+  color:var(--text-primary);
+  margin-bottom:5px;
+  display:flex;align-items:center;gap:6px;
+}
+.green-tech-dot{width:4px;height:4px;border-radius:50%;background:var(--wheat);flex-shrink:0}
+.green-chips{display:flex;flex-wrap:wrap;gap:3px}
+.gchip{
+  font-size:10px;font-weight:400;
+  background:var(--warm);
+  color:var(--text-secondary);
+  padding:2px 7px;border-radius:3px;
+  border:0.5px solid var(--border);
+}
+.gchip.risk{background:rgba(184,84,80,.08);color:var(--conflict);border-color:rgba(184,84,80,.15)}
+.gchip.risk-med{background:rgba(212,148,58,.1);color:#8B5E1A;border-color:rgba(212,148,58,.2)}
+
+.green-divider{height:0.5px;background:var(--border);margin:4px 0}
+
+/* NEXUS STATS */
+.nexus-list{display:flex;flex-direction:column;gap:0}
+.nexus-stat{
+  padding:12px 0;
+  border-bottom:0.5px solid rgba(255,255,255,.08);
+}
+.nexus-stat:last-child{border-bottom:none}
+.nexus-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:26px;font-weight:400;
+  color:var(--ivory);
+  line-height:1;
+  margin-bottom:4px;
+}
+.nexus-label{font-size:11px;color:rgba(245,240,232,.5);line-height:1.5}
+.nexus-region{
+  font-size:10px;color:rgba(245,240,232,.3);
+  margin-top:3px;font-style:italic;
+}
+
+/* ── INSIGHT STRIP ── */
+.insight-strip{
+  background:var(--navy);
+  padding:20px 48px;
+  display:flex;gap:0;
+  border-top:0.5px solid rgba(255,255,255,.06);
+}
+.insight-item{
+  flex:1;padding:0 24px;
+  border-right:0.5px solid rgba(255,255,255,.06);
+}
+.insight-item:first-child{padding-left:0}
+.insight-item:last-child{border-right:none;padding-right:0}
+.insight-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:20px;font-weight:400;
+  margin-bottom:4px;
+}
+.insight-label{font-size:11px;color:rgba(245,240,232,.35);line-height:1.5}
+
+/* ── REGULATORY BAND ── */
+.reg-band{
+  background:var(--warm);
+  padding:24px 48px;
+  border-top:0.5px solid var(--border);
+  border-bottom:0.5px solid var(--border);
+}
+.reg-inner{display:flex;gap:0;align-items:stretch}
+.reg-label-col{
+  width:180px;flex-shrink:0;
+  padding-right:24px;
+  border-right:0.5px solid var(--border);
+  display:flex;flex-direction:column;justify-content:center;
+}
+.reg-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--text-tertiary);
+  letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.reg-heading{font-size:14px;font-weight:500;color:var(--text-primary);line-height:1.4}
+.reg-pills{
+  flex:1;padding-left:24px;
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+}
+.rpill{
+  font-size:11px;font-weight:400;
+  padding:5px 12px;border-radius:20px;
+  border:0.5px solid;white-space:nowrap;
+}
+.rp-live{background:rgba(27,79,138,.08);color:var(--cobalt);border-color:rgba(27,79,138,.2)}
+.rp-delayed{background:rgba(212,148,58,.1);color:#7A4E0A;border-color:rgba(212,148,58,.25)}
+.rp-gap{background:rgba(184,84,80,.08);color:var(--conflict);border-color:rgba(184,84,80,.2)}
+
+/* ── FOOTER ── */
+.foot{
+  background:var(--navy);
+  padding:20px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.foot-credit{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:rgba(245,240,232,.3);
+  letter-spacing:.06em;
+}
+.foot-credit strong{color:rgba(245,240,232,.6);font-weight:500}
+.foot-sources{font-size:10px;color:rgba(245,240,232,.2);max-width:480px;line-height:1.5;text-align:right}
+
+/* ── RESPONSIVE ── */
+@media(max-width:720px){
+  .hero{padding:36px 24px 32px}
+  .triptych{grid-template-columns:1fr}
+  .p1,.p2{border-right:none;border-bottom:0.5px solid rgba(0,0,0,.08)}
+  .insight-strip{padding:16px 24px;flex-wrap:wrap}
+  .insight-item{min-width:140px;padding:10px 12px;border:none;border-bottom:0.5px solid rgba(255,255,255,.06)}
+  .reg-band{padding:20px 24px}
+  .reg-inner{flex-direction:column}
+  .reg-label-col{width:100%;border-right:none;border-bottom:0.5px solid var(--border);padding:0 0 16px;margin-bottom:16px}
+  .foot{padding:16px 24px}
+  .foot-sources{text-align:left}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+
+  <!-- SVG coordinate grid overlay — cartographic signature element -->
+  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0" aria-hidden="true">
+    <defs>
+      <pattern id="coord" width="96" height="96" patternUnits="userSpaceOnUse">
+        <circle cx="96" cy="96" r="1.5" fill="rgba(91,158,201,0.12)"/>
+        <circle cx="0" cy="0" r="1.5" fill="rgba(91,158,201,0.12)"/>
+        <circle cx="96" cy="0" r="1.5" fill="rgba(91,158,201,0.12)"/>
+        <circle cx="0" cy="96" r="1.5" fill="rgba(91,158,201,0.12)"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#coord)"/>
+  </svg>
+
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <div class="eyebrow-line"></div>
+      <span class="eyebrow-text">Sample analytical work · Critical minerals intelligence</span>
+    </div>
+
+    <h1 class="hero-title">
+      The green economy's<br>
+      <em>hidden costs</em> — conflict,<br>
+      gender-based violence &amp;<br>
+      supply chain governance
+    </h1>
+
+    <p class="hero-desc">
+      A cross-section of geopolitical risk mapping, green economy demand analysis,
+      and food-water-energy nexus assessment across the global critical minerals
+      supply chain. Grounded in verified primary sources: IEA, UN Group of Experts,
+      USGS, US State Department, UNU-INWEH.
+    </p>
+
+    <div class="hero-meta">
+      <div class="meta-item">
+        <strong>Christina B</strong>
+        Independent policy analyst &amp; researcher
+      </div>
+      <div class="meta-item">
+        <strong>June 2026</strong>
+        Research instrument
+      </div>
+      <div class="meta-item">
+        <strong>11 source countries</strong>
+        mapped &amp; assessed
+      </div>
+      <div class="meta-item">
+        <strong>4 regulatory frameworks</strong>
+        LkSG · CSDDD · CRMA · Battery Reg
+      </div>
+    </div>
+  </div>
+  <div class="hero-accent"></div>
+</div>
+
+<!-- TRIPTYCH -->
+<div class="triptych">
+
+  <!-- PANEL 1: SUPPLY RISK -->
+  <div class="p1">
+    <div class="panel-label">
+      <span class="panel-label-dot"></span>
+      Supply risk index
+    </div>
+    <div class="risk-list">
+
+      <div class="risk-item">
+        <div>
+          <div class="risk-name">DRC — cobalt &amp; tantalum</div>
+          <div class="risk-sub">73% global cobalt mine output</div>
+          <div class="risk-flags">
+            <span class="rflag rf-c">Active conflict</span>
+            <span class="rflag rf-g">Critical GBV</span>
+            <span class="rflag rf-s">Origin evasion</span>
+          </div>
+        </div>
+        <div class="risk-right">
+          <div class="risk-bar-track"><div class="risk-bar-fill" style="width:96%;background:var(--conflict)"></div></div>
+          <span class="risk-score">9.6</span>
+        </div>
+      </div>
+
+      <div class="risk-item">
+        <div>
+          <div class="risk-name">Myanmar — heavy REEs</div>
+          <div class="risk-sub">Kachin State; laundered via Yunnan</div>
+          <div class="risk-flags">
+            <span class="rflag rf-c">Civil war</span>
+            <span class="rflag rf-g">Systematic CRSV</span>
+            <span class="rflag rf-s">Origin laundering</span>
+          </div>
+        </div>
+        <div class="risk-right">
+          <div class="risk-bar-track"><div class="risk-bar-fill" style="width:92%;background:var(--conflict)"></div></div>
+          <span class="risk-score">9.2</span>
+        </div>
+      </div>
+
+      <div class="risk-item">
+        <div>
+          <div class="risk-name">Russia — palladium &amp; nickel</div>
+          <div class="risk-sub">40% global palladium; Ukraine war</div>
+          <div class="risk-flags">
+            <span class="rflag rf-c">Active war</span>
+            <span class="rflag rf-s">Comprehensive sanctions</span>
+          </div>
+        </div>
+        <div class="risk-right">
+          <div class="risk-bar-track"><div class="risk-bar-fill" style="width:84%;background:#C4823A"></div></div>
+          <span class="risk-score">8.4</span>
+        </div>
+      </div>
+
+      <div class="risk-item">
+        <div>
+          <div class="risk-name">China — REEs &amp; graphite</div>
+          <div class="risk-sub">85–91% REE refining; export controls active</div>
+          <div class="risk-flags">
+            <span class="rflag rf-s">Export restrictions 2024–25</span>
+            <span class="rflag rf-w">Concentration risk</span>
+          </div>
+        </div>
+        <div class="risk-right">
+          <div class="risk-bar-track"><div class="risk-bar-fill" style="width:78%;background:var(--wheat)"></div></div>
+          <span class="risk-score">7.8</span>
+        </div>
+      </div>
+
+      <div class="risk-item">
+        <div>
+          <div class="risk-name">South Africa — PGMs</div>
+          <div class="risk-sub">75% global platinum; high GBV context</div>
+          <div class="risk-flags">
+            <span class="rflag rf-g">High GBV</span>
+            <span class="rflag rf-w">Water stress</span>
+          </div>
+        </div>
+        <div class="risk-right">
+          <div class="risk-bar-track"><div class="risk-bar-fill" style="width:52%;background:var(--wheat-soft)"></div></div>
+          <span class="risk-score">5.2</span>
+        </div>
+      </div>
+
+      <div class="risk-item">
+        <div>
+          <div class="risk-name">Chile — copper &amp; lithium</div>
+          <div class="risk-sub">24% global copper; Atacama water stress</div>
+          <div class="risk-flags">
+            <span class="rflag rf-w">Critical water stress</span>
+          </div>
+        </div>
+        <div class="risk-right">
+          <div class="risk-bar-track"><div class="risk-bar-fill" style="width:38%;background:var(--sage-soft)"></div></div>
+          <span class="risk-score">3.8</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PANEL 2: GREEN ECONOMY -->
+  <div class="p2">
+    <div class="panel-label">
+      <span class="panel-label-dot"></span>
+      Green economy demand
+    </div>
+    <div class="green-list">
+
+      <div class="green-item">
+        <div class="green-tech"><span class="green-tech-dot"></span>EV batteries</div>
+        <div class="green-chips">
+          <span class="gchip risk">Lithium</span>
+          <span class="gchip risk">Cobalt</span>
+          <span class="gchip risk-med">Nickel</span>
+          <span class="gchip risk-med">Manganese</span>
+          <span class="gchip risk">Graphite</span>
+          <span class="gchip">Copper</span>
+        </div>
+      </div>
+
+      <div class="green-divider"></div>
+
+      <div class="green-item">
+        <div class="green-tech"><span class="green-tech-dot"></span>Wind turbines</div>
+        <div class="green-chips">
+          <span class="gchip risk">Neodymium</span>
+          <span class="gchip risk">Dysprosium</span>
+          <span class="gchip risk-med">Praseodymium</span>
+          <span class="gchip">Copper</span>
+          <span class="gchip">Steel</span>
+        </div>
+      </div>
+
+      <div class="green-divider"></div>
+
+      <div class="green-item">
+        <div class="green-tech"><span class="green-tech-dot"></span>Solar PV</div>
+        <div class="green-chips">
+          <span class="gchip risk-med">Silicon</span>
+          <span class="gchip risk-med">Gallium</span>
+          <span class="gchip risk-med">Indium</span>
+          <span class="gchip">Silver</span>
+          <span class="gchip">Aluminium</span>
+        </div>
+      </div>
+
+      <div class="green-divider"></div>
+
+      <div class="green-item">
+        <div class="green-tech"><span class="green-tech-dot"></span>Hydrogen &amp; fuel cells</div>
+        <div class="green-chips">
+          <span class="gchip risk">Platinum</span>
+          <span class="gchip risk">Iridium</span>
+          <span class="gchip risk-med">Palladium</span>
+          <span class="gchip">Nickel</span>
+          <span class="gchip">Titanium</span>
+        </div>
+      </div>
+
+      <div class="green-divider"></div>
+
+      <div class="green-item">
+        <div class="green-tech"><span class="green-tech-dot"></span>Grid infrastructure</div>
+        <div class="green-chips">
+          <span class="gchip risk-med">Copper</span>
+          <span class="gchip">Aluminium</span>
+          <span class="gchip risk-med">Silicon</span>
+          <span class="gchip risk-med">Gallium</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:16px;padding-top:14px;border-top:0.5px solid var(--border)">
+      <div style="font-size:10px;color:var(--text-tertiary);line-height:1.6">
+        <span style="color:var(--conflict);font-weight:500">Red chips</span> = high supply risk source ·
+        <span style="color:#8B5E1A;font-weight:500">Amber chips</span> = medium risk ·
+        Demand projected to 4× by 2040 (IEA)
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 3: NEXUS -->
+  <div class="p3">
+    <div class="panel-label">
+      <span class="panel-label-dot"></span>
+      Food · water · energy nexus
+    </div>
+    <div class="nexus-list">
+
+      <div class="nexus-stat">
+        <div class="nexus-num">456B L</div>
+        <div class="nexus-label">Water used for 2024 global lithium output</div>
+        <div class="nexus-region">UNU-INWEH, 2026</div>
+      </div>
+
+      <div class="nexus-stat">
+        <div class="nexus-num">65%</div>
+        <div class="nexus-label">Known lithium resources in medium-to-very-high water-stress areas</div>
+        <div class="nexus-region">Atacama, Puna, Uyuni</div>
+      </div>
+
+      <div class="nexus-stat">
+        <div class="nexus-num">54%</div>
+        <div class="nexus-label">Energy transition mineral projects on or near indigenous lands</div>
+        <div class="nexus-region">IEA Critical Minerals Outlook 2025</div>
+      </div>
+
+      <div class="nexus-stat">
+        <div class="nexus-num">9 m</div>
+        <div class="nexus-label">Drop in Atacama water table at brine-well areas, 1990–2015</div>
+        <div class="nexus-region">Chile · Salar de Atacama</div>
+      </div>
+
+      <div class="nexus-stat">
+        <div class="nexus-num">7%</div>
+        <div class="nexus-label">Global copper supply at climate disruption risk in 2024 alone</div>
+        <div class="nexus-region">IEA, 2025 · floods &amp; droughts</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- INSIGHT STRIP -->
+<div class="insight-strip">
+  <div class="insight-item">
+    <div class="insight-num" style="color:var(--conflict-soft)">€0</div>
+    <div class="insight-label">LkSG fines imposed in enforcement Year 1 — despite 30 complaints</div>
+  </div>
+  <div class="insight-item">
+    <div class="insight-num" style="color:var(--straw)">$800K</div>
+    <div class="insight-label">Per month earned by M23 from Rubaya coltan taxation (UN, 2025)</div>
+  </div>
+  <div class="insight-item">
+    <div class="insight-num" style="color:var(--sky)">2×</div>
+    <div class="insight-label">Rwanda coltan exports vs domestic production in 2024 — statistical evidence of laundering</div>
+  </div>
+  <div class="insight-item">
+    <div class="insight-num" style="color:var(--sage-soft)">15 yrs</div>
+    <div class="insight-label">Germany's BGR mine-site traceability in DRC — never linked to LkSG compliance</div>
+  </div>
+</div>
+
+<!-- REGULATORY BAND -->
+<div class="reg-band">
+  <div class="reg-inner">
+    <div class="reg-label-col">
+      <div class="reg-eyebrow">Regulatory landscape</div>
+      <div class="reg-heading">Four instruments, one structural gap</div>
+    </div>
+    <div class="reg-pills">
+      <span class="rpill rp-live">LkSG — in force 2023 (reformed Sep 2025)</span>
+      <span class="rpill rp-delayed">CSDDD Omnibus — application from Jul 2029</span>
+      <span class="rpill rp-live">EU Battery Regulation — due diligence from Aug 2027</span>
+      <span class="rpill rp-delayed">Battery Passport — mandatory Feb 2027</span>
+      <span class="rpill rp-live">CRMA — in force May 2024</span>
+      <span class="rpill rp-gap">Civil liability — removed by Omnibus</span>
+      <span class="rpill rp-gap">GBV not named in LkSG or CSDDD</span>
+      <span class="rpill rp-gap">Tier 2+ blind spot — artisanal mining invisible</span>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="foot">
+  <div class="foot-credit">
+    Analysis by <strong>Christina B</strong> &nbsp;·&nbsp; June 2026 &nbsp;·&nbsp; Sample portfolio work
+  </div>
+  <div class="foot-sources">
+    Sources: IEA Global Critical Minerals Outlook 2025 · DOE Critical Materials List 2023/2025 · USGS 2025 · UN Group of Experts on DRC (2025) · UNU-INWEH (2026) · US State Dept (2024) · BAFA Rechenschaftsbericht 2023 · Directive (EU) 2026/470
+  </div>
+</div>
+
+</body>
+</html>
